@@ -65,275 +65,275 @@ tLineBuffer sd_line_buf;
 
 void io_init(void)
 {
-  /* Extruder 0 Heater pin */
-  pin_mode(EXTRUDER_0_HEATER_PORT, EXTRUDER_0_HEATER_PIN, OUTPUT);
-  extruder_heater_off();
+	/* Extruder 0 Heater pin */
+	pin_mode(EXTRUDER_0_HEATER_PORT, EXTRUDER_0_HEATER_PIN, OUTPUT);
+	extruder_heater_off();
 
-  /* Heated Bed 0 Heater pin */
-  pin_mode(HEATED_BED_0_HEATER_PORT, HEATED_BED_0_HEATER_PIN, OUTPUT);
-  heated_bed_off();
+	/* Heated Bed 0 Heater pin */
+	pin_mode(HEATED_BED_0_HEATER_PORT, HEATED_BED_0_HEATER_PIN, OUTPUT);
+	heated_bed_off();
 
-  /* setup I/O pins */
-  pin_mode(STEPPERS_RESET_PORT, STEPPERS_RESET_PIN, OUTPUT);
-  digital_write(STEPPERS_RESET_PORT, STEPPERS_RESET_PIN, 1); /* Disable reset for all stepper motors */
+	/* setup I/O pins */
+	pin_mode(STEPPERS_RESET_PORT, STEPPERS_RESET_PIN, OUTPUT);
+	digital_write(STEPPERS_RESET_PORT, STEPPERS_RESET_PIN, 1); /* Disable reset for all stepper motors */
 
-  pin_mode(X_STEP_PORT, X_STEP_PIN, OUTPUT);
-  pin_mode(X_DIR_PORT, X_DIR_PIN, OUTPUT);
-  pin_mode(X_ENABLE_PORT, X_ENABLE_PIN, OUTPUT);
-  x_enable();
-  pin_mode(X_MIN_PORT, X_MIN_PIN, INPUT);
+	pin_mode(X_STEP_PORT, X_STEP_PIN, OUTPUT);
+	pin_mode(X_DIR_PORT, X_DIR_PIN, OUTPUT);
+	pin_mode(X_ENABLE_PORT, X_ENABLE_PIN, OUTPUT);
+	x_enable();
+	pin_mode(X_MIN_PORT, X_MIN_PIN, INPUT);
 
-  pin_mode(Y_STEP_PORT, Y_STEP_PIN, OUTPUT);
-  pin_mode(Y_DIR_PORT, Y_DIR_PIN, OUTPUT);
-  pin_mode(Y_ENABLE_PORT, Y_ENABLE_PIN, OUTPUT);
-  y_enable();
-  pin_mode(Y_MIN_PORT, Y_MIN_PIN, INPUT);
+	pin_mode(Y_STEP_PORT, Y_STEP_PIN, OUTPUT);
+	pin_mode(Y_DIR_PORT, Y_DIR_PIN, OUTPUT);
+	pin_mode(Y_ENABLE_PORT, Y_ENABLE_PIN, OUTPUT);
+	y_enable();
+	pin_mode(Y_MIN_PORT, Y_MIN_PIN, INPUT);
 
-  pin_mode(Z_STEP_PORT, Z_STEP_PIN, OUTPUT);
-  pin_mode(Z_DIR_PORT, Z_DIR_PIN, OUTPUT);
-  pin_mode(Z_ENABLE_PORT, Z_ENABLE_PIN, OUTPUT);
-  z_enable();
-  pin_mode(Z_MIN_PORT, Z_MIN_PIN, INPUT);
+	pin_mode(Z_STEP_PORT, Z_STEP_PIN, OUTPUT);
+	pin_mode(Z_DIR_PORT, Z_DIR_PIN, OUTPUT);
+	pin_mode(Z_ENABLE_PORT, Z_ENABLE_PIN, OUTPUT);
+	z_enable();
+	pin_mode(Z_MIN_PORT, Z_MIN_PIN, INPUT);
 
-  pin_mode(E_STEP_PORT, E_STEP_PIN, OUTPUT);
-  pin_mode(E_DIR_PORT, E_DIR_PIN, OUTPUT);
-  pin_mode(E_ENABLE_PORT, E_ENABLE_PIN, OUTPUT);
-  e_enable();
+	pin_mode(E_STEP_PORT, E_STEP_PIN, OUTPUT);
+	pin_mode(E_DIR_PORT, E_DIR_PIN, OUTPUT);
+	pin_mode(E_ENABLE_PORT, E_ENABLE_PIN, OUTPUT);
+	e_enable();
 
-  adc_init();
+	adc_init();
 }
 
 
 void blinkTimerCallback (tTimer *pTimer)
 {
-  if (leds_enabled)
-  {
-    led_on = led_on ^ 0x0F;
+	if (leds_enabled)
+	{
+		led_on = led_on ^ 0x0F;
 
-    if (led_on)
-      StartSlowTimer (&blinkTimer, led_on_time, blinkTimerCallback);
-    else
-      StartSlowTimer (&blinkTimer, led_off_time, blinkTimerCallback);
-  }
-  else
-  {
-    led_on = 0x00;
-  }
+		if (led_on)
+			StartSlowTimer (&blinkTimer, led_on_time, blinkTimerCallback);
+		else
+			StartSlowTimer (&blinkTimer, led_off_time, blinkTimerCallback);
+	}
+	else
+	{
+		led_on = 0x00;
+	}
 
 }
 
 void startBlink(void)
 {
-  leds_enabled = 1;
+	leds_enabled = 1;
 #ifdef STEP_LED_FLASH_FIXED  
-  StartSlowTimer (&blinkTimer, led_on_time, blinkTimerCallback);
-  led_on = 0x0F;
+	StartSlowTimer (&blinkTimer, led_on_time, blinkTimerCallback);
+	led_on = 0x0F;
 #else
-  led_on = 0x00;
+	led_on = 0x00;
 #endif
 }
 
 void stopBlink (void)
 {
-  leds_enabled = 0;
-  led_on = 0x00;
-  StopSlowTimer (&blinkTimer);
-  unstep();
+	leds_enabled = 0;
+	led_on = 0x00;
+	StopSlowTimer (&blinkTimer);
+	unstep();
 }
 
 void timerCallback (tHwTimer *pTimer, uint32_t int_mask)
 {
-  (void)pTimer;
+	(void)pTimer;
 
-  if (int_mask & _BIT(TIM_MR0_INT))
-  {
-    // decide which outputs need stepping
-    queue_step();
-  }
+	if (int_mask & _BIT(TIM_MR0_INT))
+	{
+		// decide which outputs need stepping
+		queue_step();
+	}
 
-  if (int_mask & _BIT(TIM_MR1_INT))
-  { 
-    // step the required channels
-    if (step_requested & 1)
-      x_step();
-    if (step_requested & 2)
-      y_step();
-    if (step_requested & 4)
-      z_step();
-    if (step_requested & 8)
-      e_step();
-  }
+	if (int_mask & _BIT(TIM_MR1_INT))
+	{ 
+		// step the required channels
+		if (step_requested & 1)
+			x_step();
+		if (step_requested & 2)
+			y_step();
+		if (step_requested & 4)
+			z_step();
+		if (step_requested & 8)
+			e_step();
+	}
 
-  if (int_mask & _BIT(TIM_MR2_INT))
-  { 
+	if (int_mask & _BIT(TIM_MR2_INT))
+	{ 
 #ifdef STEP_LED_NONE
-    // turn off all step outputs
-    unstep();
+		// turn off all step outputs
+		unstep();
 #elif !defined(STEP_LED_ON_WHEN_ACTIVE)
-    // turn off step outputs
-    if ((led_on & 1) == 0)
-    {
-      x_unstep();
-    }
-    if ((led_on & 2) == 0)
-    {
-      y_unstep();
-    }
-    if ((led_on & 4) == 0)
-    {
-      z_unstep();
-    }
-    if ((led_on & 8) == 0)
-    {
-      e_unstep();
-    }
-    // else leave as is (important!)
+		// turn off step outputs
+		if ((led_on & 1) == 0)
+		{
+			x_unstep();
+		}
+		if ((led_on & 2) == 0)
+		{
+			y_unstep();
+		}
+		if ((led_on & 4) == 0)
+		{
+			z_unstep();
+		}
+		if ((led_on & 8) == 0)
+		{
+			e_unstep();
+		}
+		// else leave as is (important!)
 #endif
-  }
+	}
 
 }
 
 void check_boot_request (void)
 {
-  if (digital_read (4, (1<<29)) == 0)
-  {
-    WDT_Init (WDT_CLKSRC_PCLK, WDT_MODE_RESET);
-    WDT_Start (10);
-    while (1);
-  }
+	if (digital_read (4, (1<<29)) == 0)
+	{
+		WDT_Init (WDT_CLKSRC_PCLK, WDT_MODE_RESET);
+		WDT_Start (10);
+		while (1);
+	}
 }
 
 void init(void)
 {
-  // set up inputs and outputs
-  io_init();
+	// set up inputs and outputs
+	io_init();
 
-  /* Initialize DDA variables */
-  dda_init();
+	/* Initialize DDA variables */
+	dda_init();
 
-  /* Initialize Gcode parse variables */
-  gcode_parse_init();
+	/* Initialize Gcode parse variables */
+	gcode_parse_init();
 
-  // set up default feedrate
-  current_position.F = startpoint.F = next_target.target.F = \
-      config.search_feedrate_z;
+	// set up default feedrate
+	current_position.F = startpoint.F = next_target.target.F = \
+						 config.search_feedrate_z;
 
-  // set up timers
-  // we use hardware timer 0
-  setupHwTimer(0, timerCallback);
+	// set up timers
+	// we use hardware timer 0
+	setupHwTimer(0, timerCallback);
 
-  // Set the Match 1 and Match 2 interrupts
-  // The time from Match0 to Match 1 defines the low pulse period of the step output
-  // and the time from Match1 to Match 2 defines the minimum high pulse period of the step output-
-  // if the LED is in a blink ON period the step output will be left high until next required step
-  setHwTimerMatch(0, 1, 500); // Match1 about Match0 + 5 us
-  setHwTimerMatch(0, 2, 1000); // Match2, about Match0 + 10 us
+	// Set the Match 1 and Match 2 interrupts
+	// The time from Match0 to Match 1 defines the low pulse period of the step output
+	// and the time from Match1 to Match 2 defines the minimum high pulse period of the step output-
+	// if the LED is in a blink ON period the step output will be left high until next required step
+	setHwTimerMatch(0, 1, 500); // Match1 about Match0 + 5 us
+	setHwTimerMatch(0, 2, 1000); // Match2, about Match0 + 10 us
 
-  // set the LED blink times, 50 ms on/off = 10 flashes per second
-  led_on_time = 50;
-  led_off_time = 50;
+	// set the LED blink times, 50 ms on/off = 10 flashes per second
+	led_on_time = 50;
+	led_off_time = 50;
 
-  AddSlowTimer (&blinkTimer);
+	AddSlowTimer (&blinkTimer);
 
-  // say hi to host
-  serial_writestr("Start\r\nOK\r\n");
+	// say hi to host
+	serial_writestr("Start\r\nOK\r\n");
 }
 
 int main_reprap (void)
 {
-  long timer1 = 0;
+	long timer1 = 0;
 
-  buzzer_init();
-  buzzer_play(1500, 100); /* low beep */
+	buzzer_init();
+	buzzer_play(1500, 100); /* low beep */
 	buzzer_wait();
-  buzzer_play(2500, 200); /* high beep */
+	buzzer_play(2500, 200); /* high beep */
 
-  init();
+	init();
 
-  read_config();
+	read_config();
 
-  // main loop
-  for (;;)
-  {
+	// main loop
+	for (;;)
+	{
 
-    // process characters from the serial port
-    while (!serial_line_buf.seen_lf && (serial_rxchars() != 0) )
-    {
-      unsigned char c = serial_popchar();
-      
-      if (serial_line_buf.len < MAX_LINE)
-        serial_line_buf.data [serial_line_buf.len++] = c;
+		// process characters from the serial port
+		while (!serial_line_buf.seen_lf && (serial_rxchars() != 0) )
+		{
+			unsigned char c = serial_popchar();
 
-      if ((c==10) || (c==13))
-      {
-        if (serial_line_buf.len > 1)
-          serial_line_buf.seen_lf = 1;
-        else
-          serial_line_buf.len = 0;
-      }      
-    }
+			if (serial_line_buf.len < MAX_LINE)
+				serial_line_buf.data [serial_line_buf.len++] = c;
 
-    // process SD file if no serial command pending
-    if (!serial_line_buf.seen_lf && sd_printing)
-    {
-      if (sd_read_file (&sd_line_buf))
-      {
-          sd_line_buf.seen_lf = 1;
-      } 
-      else
-      {
-        sd_printing = false;
-        serial_writestr ("Done printing file\r\n");
-      }
-    }
+			if ((c==10) || (c==13))
+			{
+				if (serial_line_buf.len > 1)
+					serial_line_buf.seen_lf = 1;
+				else
+					serial_line_buf.len = 0;
+			}      
+		}
 
-    // if queue is full, we wait
-    if (queue_full() == 0)
-    {
-  
-      /* At end of each line, put the "GCode" on movebuffer.
-       * If there are movement to do, Timer will start and execute code which
-       * will take data from movebuffer and generate the required step pulses
-       * for stepper motors.
-       */
-  
-      // give priority to user commands
-      if (serial_line_buf.seen_lf)
-      {
-        gcode_parse_line (&serial_line_buf);
-        serial_line_buf.len = 0;
-        serial_line_buf.seen_lf = 0;
-      }
-      else if (sd_line_buf.seen_lf)
-      {
-        gcode_parse_line (&sd_line_buf);
-        sd_line_buf.len = 0;
-        sd_line_buf.seen_lf = 0;
-      }
+		// process SD file if no serial command pending
+		if (!serial_line_buf.seen_lf && sd_printing)
+		{
+			if (sd_read_file (&sd_line_buf))
+			{
+				sd_line_buf.seen_lf = 1;
+			} 
+			else
+			{
+				sd_printing = false;
+				serial_writestr ("Done printing file\r\n");
+			}
+		}
 
-    }
+		// if queue is full, we wait
+		if (queue_full() == 0)
+		{
 
-    /* Do every 100ms */
-    #define DELAY1 100
-    if (timer1 < millis())
-    {
-      timer1 = millis() + DELAY1;
+			/* At end of each line, put the "GCode" on movebuffer.
+			 * If there are movement to do, Timer will start and execute code which
+			 * will take data from movebuffer and generate the required step pulses
+			 * for stepper motors.
+			 */
 
-      /* Manage the extruder temperature */
-      temp_tick();
+			// give priority to user commands
+			if (serial_line_buf.seen_lf)
+			{
+				gcode_parse_line (&serial_line_buf);
+				serial_line_buf.len = 0;
+				serial_line_buf.seen_lf = 0;
+			}
+			else if (sd_line_buf.seen_lf)
+			{
+				gcode_parse_line (&sd_line_buf);
+				sd_line_buf.len = 0;
+				sd_line_buf.seen_lf = 0;
+			}
 
-      /* If there are no activity during 30 seconds, power off the machine */
-      if (steptimeout > (30 * 4))
-      {
-        power_off();
-      }
-      else
-      {
-        steptimeout++;
-      }
-    }
+		}
 
-    // OPTION: enter bootloader on "Boot" button
-    //!check_boot_request();
-  }
+		/* Do every 100ms */
+#define DELAY1 100
+		if (timer1 < millis())
+		{
+			timer1 = millis() + DELAY1;
+
+			/* Manage the extruder temperature */
+			temp_tick();
+
+			/* If there are no activity during 30 seconds, power off the machine */
+			if (steptimeout > (30 * 4))
+			{
+				power_off();
+			}
+			else
+			{
+				steptimeout++;
+			}
+		}
+
+		// OPTION: enter bootloader on "Boot" button
+		//!check_boot_request();
+	}
 }

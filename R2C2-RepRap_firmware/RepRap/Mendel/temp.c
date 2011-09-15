@@ -41,37 +41,37 @@
 /* Table for NTC EPCOS B57560G104F and R1 = 330R for Extruder0
  * Table for NTC EPCOS B57560G104F and R1 = 12K for HeatedBed0 */
 uint16_t temptable[NUMTEMPS][3] = {
-  {1009,   36, 300}, /* {ADC value Extruder0, ADC value HeatedBed0, temperature} */
-  {1119,   42, 290},
-  {1240,   48, 280},
-  {1372,   56, 270},
-  {1517,   65, 260},
-  {1673,   76, 250},
-  {1839,   90, 240},
-  {2015,  106, 230},
-  {2198,  126, 220},
-  {2385,  151, 210},
-  {2573,  182, 200},
-  {2759,  220, 190},
-  {2940,  268, 180},
-  {3112,  328, 170},
-  {3270,  402, 160},
-  {3415,  496, 150},
-  {3544,  614, 140},
-  {3655,  761, 130},
-  {3750,  941, 120},
-  {3830, 1161, 110},
-  {3894, 1420, 100},
-  {3946, 1719,  90},
-  {3986, 2048,  80},
-  {4017, 2394,  70},
-  {4041, 2737,  60},
-  {4058, 3056,  50},
-  {4070, 3335,  40},
-  {4079, 3563,  30},
-  {4085, 3738,  20},
-  {4089, 3866,  10},
-  {4092, 3954,   0}
+	{1009,   36, 300}, /* {ADC value Extruder0, ADC value HeatedBed0, temperature} */
+	{1119,   42, 290},
+	{1240,   48, 280},
+	{1372,   56, 270},
+	{1517,   65, 260},
+	{1673,   76, 250},
+	{1839,   90, 240},
+	{2015,  106, 230},
+	{2198,  126, 220},
+	{2385,  151, 210},
+	{2573,  182, 200},
+	{2759,  220, 190},
+	{2940,  268, 180},
+	{3112,  328, 170},
+	{3270,  402, 160},
+	{3415,  496, 150},
+	{3544,  614, 140},
+	{3655,  761, 130},
+	{3750,  941, 120},
+	{3830, 1161, 110},
+	{3894, 1420, 100},
+	{3946, 1719,  90},
+	{3986, 2048,  80},
+	{4017, 2394,  70},
+	{4041, 2737,  60},
+	{4058, 3056,  50},
+	{4070, 3335,  40},
+	{4079, 3563,  30},
+	{4085, 3738,  20},
+	{4089, 3866,  10},
+	{4092, 3954,   0}
 };
 
 uint16_t current_temp[NUMBER_OF_SENSORS] = {0, 0}, target_temp[NUMBER_OF_SENSORS] = {0, 0};
@@ -82,165 +82,165 @@ uint16_t current_temp[NUMBER_OF_SENSORS] = {0, 0}, target_temp[NUMBER_OF_SENSORS
 
 uint16_t temp_read(uint8_t sensor_number)
 {
-  return current_temp[sensor_number];
+	return current_temp[sensor_number];
 }
 
 void temp_set(uint16_t t, uint8_t sensor_number)
 {
-  if (t)
-  {
-    steptimeout = 0;
-    power_on();
-  }
+	if (t)
+	{
+		steptimeout = 0;
+		power_on();
+	}
 
-  target_temp[sensor_number] = t;
+	target_temp[sensor_number] = t;
 }
 
 uint16_t temp_get(uint8_t sensor_number)
 {
-  return current_temp[sensor_number];
+	return current_temp[sensor_number];
 }
 
 uint16_t temp_get_target(uint8_t sensor_number)
 {
-  return target_temp[sensor_number];
+	return target_temp[sensor_number];
 }
 
 uint8_t	temp_achieved(uint8_t sensor_number)
 {
-  if (current_temp[sensor_number] >= (target_temp[sensor_number] - 2))
-    return 255;
+	if (current_temp[sensor_number] >= (target_temp[sensor_number] - 2))
+		return 255;
 
-  return 0;
+	return 0;
 }
 
 void temp_print()
 {
-  sersendf("ok T:%u.0 B:%u.0\r\n", current_temp[EXTRUDER_0], current_temp[HEATED_BED_0]); /* for RepRap software */
+	sersendf("ok T:%u.0 B:%u.0\r\n", current_temp[EXTRUDER_0], current_temp[HEATED_BED_0]); /* for RepRap software */
 }
 
 void temp_tick(void)
 {
 
-/* Define a value for sequencial number of reads of ADC, to average the readed
- * value and try filter high frequency noise.
- */
+	/* Define a value for sequencial number of reads of ADC, to average the readed
+	 * value and try filter high frequency noise.
+	 */
 #define ADC_READ_TIMES 4
 
-  /* Read and average the ADC input signal */
-  current_temp[EXTRUDER_0] = 0;
-  for (uint8_t c = 0; c < ADC_READ_TIMES; c++)
-  {
-    /* Read EXTRUDER_0 temperature value and manage heater */
-    current_temp[EXTRUDER_0] += read_temp(EXTRUDER_0);
-  }
-  current_temp[EXTRUDER_0] = current_temp[EXTRUDER_0] / ADC_READ_TIMES;
+	/* Read and average the ADC input signal */
+	current_temp[EXTRUDER_0] = 0;
+	for (uint8_t c = 0; c < ADC_READ_TIMES; c++)
+	{
+		/* Read EXTRUDER_0 temperature value and manage heater */
+		current_temp[EXTRUDER_0] += read_temp(EXTRUDER_0);
+	}
+	current_temp[EXTRUDER_0] = current_temp[EXTRUDER_0] / ADC_READ_TIMES;
 
-  /* Manage heater using simple ON/OFF logic, no PID */
-  if (current_temp[EXTRUDER_0] < target_temp[EXTRUDER_0])
-  {
-    extruder_heater_on();
-  }
-  else
-  {
-    extruder_heater_off();
-  }
+	/* Manage heater using simple ON/OFF logic, no PID */
+	if (current_temp[EXTRUDER_0] < target_temp[EXTRUDER_0])
+	{
+		extruder_heater_on();
+	}
+	else
+	{
+		extruder_heater_off();
+	}
 
 
-  /* Read and average the ADC input signal */
-  current_temp[HEATED_BED_0] = 0;
-  for (uint8_t c = 0; c < ADC_READ_TIMES; c++)
-  {
-    /* Read HEATED_BED_0 temperature value and manage heater */
-    current_temp[HEATED_BED_0] += read_temp(HEATED_BED_0);
-  }
-  current_temp[HEATED_BED_0] = current_temp[HEATED_BED_0] / ADC_READ_TIMES;
+	/* Read and average the ADC input signal */
+	current_temp[HEATED_BED_0] = 0;
+	for (uint8_t c = 0; c < ADC_READ_TIMES; c++)
+	{
+		/* Read HEATED_BED_0 temperature value and manage heater */
+		current_temp[HEATED_BED_0] += read_temp(HEATED_BED_0);
+	}
+	current_temp[HEATED_BED_0] = current_temp[HEATED_BED_0] / ADC_READ_TIMES;
 
-  /* Manage heater using simple ON/OFF logic, no PID */
-  if (current_temp[HEATED_BED_0] < target_temp[HEATED_BED_0])
-  {
-    heated_bed_on();
-  }
-  else
-  {
-    heated_bed_off();
-  }
+	/* Manage heater using simple ON/OFF logic, no PID */
+	if (current_temp[HEATED_BED_0] < target_temp[HEATED_BED_0])
+	{
+		heated_bed_on();
+	}
+	else
+	{
+		heated_bed_off();
+	}
 }
 
 uint16_t read_temp(uint8_t sensor_number)
 {
-  uint16_t raw, celsius;
-  uint8_t i;
+	uint16_t raw, celsius;
+	uint8_t i;
 
-  if (sensor_number == EXTRUDER_0)
-  {
-    raw = analog_read(EXTRUDER_0_SENSOR_ADC_CHANNEL);
-  }
-  else if (sensor_number == HEATED_BED_0)
-  {
-    raw = analog_read(HEATED_BED_0_SENSOR_ADC_CHANNEL);
-  }
+	if (sensor_number == EXTRUDER_0)
+	{
+		raw = analog_read(EXTRUDER_0_SENSOR_ADC_CHANNEL);
+	}
+	else if (sensor_number == HEATED_BED_0)
+	{
+		raw = analog_read(HEATED_BED_0_SENSOR_ADC_CHANNEL);
+	}
 
-  /* Go and use the temperature table to math the temperature value... */
-  if (raw < temptable[0][sensor_number]) /* Limit the smaller value... */
-  {
-    celsius = temptable[0][2];
-  }
-  else if (raw >= temptable[NUMTEMPS-1][sensor_number]) /* Limit the higher value... */
-  {
-    celsius = temptable[NUMTEMPS-1][2];
-  }
-  else
-  {
-    for (i=1; i<NUMTEMPS; i++)
-    {
-      if (raw < temptable[i][sensor_number])
-      {
-        celsius = temptable[i-1][2] +
-            (raw - temptable[i-1][sensor_number]) *
-            (temptable[i][2] - temptable[i-1][2]) /
-            (temptable[i][sensor_number] - temptable[i-1][sensor_number]);
+	/* Go and use the temperature table to math the temperature value... */
+	if (raw < temptable[0][sensor_number]) /* Limit the smaller value... */
+	{
+		celsius = temptable[0][2];
+	}
+	else if (raw >= temptable[NUMTEMPS-1][sensor_number]) /* Limit the higher value... */
+	{
+		celsius = temptable[NUMTEMPS-1][2];
+	}
+	else
+	{
+		for (i=1; i<NUMTEMPS; i++)
+		{
+			if (raw < temptable[i][sensor_number])
+			{
+				celsius = temptable[i-1][2] +
+					(raw - temptable[i-1][sensor_number]) *
+					(temptable[i][2] - temptable[i-1][2]) /
+					(temptable[i][sensor_number] - temptable[i-1][sensor_number]);
 
-        break;
-      }
-    }
-  }
+				break;
+			}
+		}
+	}
 
-  return celsius;
+	return celsius;
 }
 
 bool temp_set_table_entry (uint8_t sensor_number, uint16_t temp, uint16_t adc_val)
 {
-  if (sensor_number < NUMBER_OF_SENSORS)
-  {
-    for (int entry=0; entry < NUMTEMPS; entry++)
-    {
-      if (temptable[entry][2] == temp)
-      {
-        temptable[entry][sensor_number] = adc_val;
-        return true;
-      }
-    }
-    return false;
-  }
-  else
-    return false;
+	if (sensor_number < NUMBER_OF_SENSORS)
+	{
+		for (int entry=0; entry < NUMTEMPS; entry++)
+		{
+			if (temptable[entry][2] == temp)
+			{
+				temptable[entry][sensor_number] = adc_val;
+				return true;
+			}
+		}
+		return false;
+	}
+	else
+		return false;
 }
 
 uint16_t temp_get_table_entry (uint8_t sensor_number, uint16_t temp)
 {
-  uint16_t result = 0xffff;
-  
-  if (sensor_number < NUMBER_OF_SENSORS)
-  {
-    for (int entry=0; entry < NUMTEMPS; entry++)
-    {
-      if (temptable[entry][2] == temp)
-      {
-        result = temptable[entry][sensor_number];
-        break;
-      }
-    }
-  }
-  return result;
+	uint16_t result = 0xffff;
+
+	if (sensor_number < NUMBER_OF_SENSORS)
+	{
+		for (int entry=0; entry < NUMTEMPS; entry++)
+		{
+			if (temptable[entry][2] == temp)
+			{
+				result = temptable[entry][sensor_number];
+				break;
+			}
+		}
+	}
+	return result;
 }

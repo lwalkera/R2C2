@@ -42,18 +42,18 @@
 #include        "config.h"
 
 /*
-	Switch user friendly values to coding friendly values
+   Switch user friendly values to coding friendly values
 
-	This also affects the possible build volume. We have +-2^31 numbers available and as we internally measure position in steps and use a precision factor of 1000, this translates into a possible range of
+   This also affects the possible build volume. We have +-2^31 numbers available and as we internally measure position in steps and use a precision factor of 1000, this translates into a possible range of
 
-		2^31 mm / STEPS_PER_MM_x / 1000
+   2^31 mm / STEPS_PER_MM_x / 1000
 
-	for each axis. For a M6 threaded rod driven machine and 1/16 microstepping this evaluates to
+   for each axis. For a M6 threaded rod driven machine and 1/16 microstepping this evaluates to
 
-		2^31 mm / 200 / 1 / 16 / 1000 = 671 mm,
+   2^31 mm / 200 / 1 / 16 / 1000 = 671 mm,
 
-	which is about the worst case we have. All other machines have a bigger build volume.
-*/
+   which is about the worst case we have. All other machines have a bigger build volume.
+   */
 
 uint32_t steps_per_m_x;
 uint32_t steps_per_m_y;
@@ -68,16 +68,16 @@ double steps_per_in_e;
 
 void gcode_parse_init(void)
 {
-  steps_per_m_x = ((uint32_t) (config.steps_per_mm_x * 1000.0));
-  steps_per_m_y = ((uint32_t) (config.steps_per_mm_y * 1000.0));
-  steps_per_m_z = ((uint32_t) (config.steps_per_mm_z * 1000.0));
-  steps_per_m_e = ((uint32_t) (config.steps_per_mm_e * 1000.0));
+	steps_per_m_x = ((uint32_t) (config.steps_per_mm_x * 1000.0));
+	steps_per_m_y = ((uint32_t) (config.steps_per_mm_y * 1000.0));
+	steps_per_m_z = ((uint32_t) (config.steps_per_mm_z * 1000.0));
+	steps_per_m_e = ((uint32_t) (config.steps_per_mm_e * 1000.0));
 
-  // same as above with 25.4 scale factor
-  steps_per_in_x = ((double) (25.4 * config.steps_per_mm_x));
-  steps_per_in_y = ((double) (25.4 * config.steps_per_mm_y));
-  steps_per_in_z = ((double) (25.4 * config.steps_per_mm_z));
-  steps_per_in_e = ((double) (25.4 * config.steps_per_mm_e));
+	// same as above with 25.4 scale factor
+	steps_per_in_x = ((double) (25.4 * config.steps_per_mm_x));
+	steps_per_in_y = ((double) (25.4 * config.steps_per_mm_y));
+	steps_per_in_z = ((double) (25.4 * config.steps_per_mm_z));
+	steps_per_in_e = ((double) (25.4 * config.steps_per_mm_e));
 }
 
 uint8_t last_field = 0;
@@ -89,8 +89,8 @@ decfloat read_digit;
 GCODE_COMMAND next_target;
 
 /*
-	utility functions
-*/
+   utility functions
+   */
 
 int32_t	decfloat_to_int(decfloat *df, int32_t multiplicand, int32_t denominator) {
 	int64_t	r = df->mantissa;
@@ -130,8 +130,8 @@ int32_t	decfloat_to_int(decfloat *df, int32_t multiplicand, int32_t denominator)
 
 
 /*
-	public functions
-*/
+   public functions
+   */
 
 void SpecialMoveXY(int32_t x, int32_t y, uint32_t f) {
 	TARGET t = startpoint;
@@ -160,25 +160,25 @@ void SpecialMoveE(int32_t e, uint32_t f) {
 
 void gcode_parse_line (tLineBuffer *pLine) 
 {
-  unsigned int j;
+	unsigned int j;
 
-  for (j=0; j < pLine->len; j++)
-    gcode_parse_char (pLine->data [j], pLine);
+	for (j=0; j < pLine->len; j++)
+		gcode_parse_char (pLine->data [j], pLine);
 }
 
 /****************************************************************************
-*                                                                           *
-* Character Received - add it to our command                                *
-*                                                                           *
-****************************************************************************/
+ *                                                                           *
+ * Character Received - add it to our command                                *
+ *                                                                           *
+ ****************************************************************************/
 
 void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
-  bool send_reply = true;
+	bool send_reply = true;
 
-	#ifdef ASTERISK_IN_CHECKSUM_INCLUDED
+#ifdef ASTERISK_IN_CHECKSUM_INCLUDED
 	if (next_target.seen_checksum == 0)
 		next_target.checksum_calculated = crc(next_target.checksum_calculated, c);
-	#endif
+#endif
 
 	// uppercase
 	if (c >= 'a' && c <= 'z')
@@ -200,7 +200,7 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 					// letters will also be converted to uppercase
 					if ( (next_target.M == 23) || (next_target.M == 28) )
 					{
-					    next_target.getting_string = 1;
+						next_target.getting_string = 1;
 					}
 					break;
 				case 'X':
@@ -235,8 +235,8 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 						next_target.target.F = decfloat_to_int(&read_digit, 1, 1);
 					break;
 				case 'S':
-          next_target.S = decfloat_to_int(&read_digit, 1, 1);
-          break;
+					next_target.S = decfloat_to_int(&read_digit, 1, 1);
+					break;
 				case 'P':
 					// if this is dwell, multiply by 1000 to convert seconds to milliseconds
 					if (next_target.G == 4)
@@ -257,19 +257,19 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 		}
 	}
 
-  if (next_target.getting_string)
-  {
-    if ((c == 10) || (c == 13) || ( c == ' ')  || ( c == '*'))
-      next_target.getting_string = 0;
-    else
-    {
-      if (next_target.chpos < sizeof(next_target.filename))
-      {
-        next_target.filename [next_target.chpos++] = c;
-        next_target.filename [next_target.chpos] = 0;
-      }
-    }      
-  }
+	if (next_target.getting_string)
+	{
+		if ((c == 10) || (c == 13) || ( c == ' ')  || ( c == '*'))
+			next_target.getting_string = 0;
+		else
+		{
+			if (next_target.chpos < sizeof(next_target.filename))
+			{
+				next_target.filename [next_target.chpos++] = c;
+				next_target.filename [next_target.chpos] = 0;
+			}
+		}      
+	}
 
 	// skip comments, filenames
 	if (next_target.seen_semi_comment == 0 && next_target.seen_parens_comment == 0 && next_target.getting_string == 0) {
@@ -320,7 +320,7 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 				next_target.seen_checksum = 1;
 				break;
 
-			// comments
+				// comments
 			case ';':
 				next_target.seen_semi_comment = 1;
 				break;
@@ -328,7 +328,7 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 				next_target.seen_parens_comment = 1;
 				break;
 
-			// now for some numeracy
+				// now for some numeracy
 			case '-':
 				read_digit.sign = 1;
 				// force sign to be at start of number, so 1-2 = -2 instead of -12
@@ -354,71 +354,71 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 		next_target.seen_parens_comment = 0; // recognize stuff after a (comment)
 
 
-	#ifndef ASTERISK_IN_CHECKSUM_INCLUDED
+#ifndef ASTERISK_IN_CHECKSUM_INCLUDED
 	if (next_target.seen_checksum == 0)
 		next_target.checksum_calculated = crc(next_target.checksum_calculated, c);
-	#endif
+#endif
 
 	// end of line
 	if ((c == 10) || (c == 13)) {
 		if (
-		#ifdef	REQUIRE_LINENUMBER
-			(next_target.N >= next_target.N_expected) && (next_target.seen_N == 1)
-		#else
-			1
-		#endif
-			) {
+#ifdef	REQUIRE_LINENUMBER
+				(next_target.N >= next_target.N_expected) && (next_target.seen_N == 1)
+#else
+				1
+#endif
+		   ) {
 			if (
-				#ifdef	REQUIRE_CHECKSUM
-				((next_target.checksum_calculated == next_target.checksum_read) && (next_target.seen_checksum == 1))
-				#else
-				((next_target.checksum_calculated == next_target.checksum_read) || (next_target.seen_checksum == 0))
-				#endif
-				) {
-            if (sd_writing_file)
-            {
-              if (next_target.seen_M && (next_target.M >= 20) && (next_target.M <= 29) )
-              {
-                if (next_target.seen_M && next_target.M == 29)
-                { 
-                  // M29 - stop writing
-                  sd_writing_file = false;
-                  sd_close (&file);
-                  serial_writestr("Done saving file\r\n");
-                }
-                else
-                {
-                  // else - do not write SD M-codes to file
-                  serial_writestr("ok\r\n");
-                }
-              }
-              else
-              {
-                // lines in files must be LF terminated for sd_read_file to work
-                if (pLine->data [pLine->len-1] == 13)
-                  pLine->data [pLine->len-1] = 10;
-                  
-                if (sd_write_to_file(pLine->data, pLine->len))
-                  serial_writestr("ok\r\n");
-                else
-                  serial_writestr("error writing to file\r\n");
-              }
-            }
-            else
-            {
-                            // process
-                            send_reply = process_gcode_command();
+#ifdef	REQUIRE_CHECKSUM
+					((next_target.checksum_calculated == next_target.checksum_read) && (next_target.seen_checksum == 1))
+#else
+					((next_target.checksum_calculated == next_target.checksum_read) || (next_target.seen_checksum == 0))
+#endif
+			   ) {
+				if (sd_writing_file)
+				{
+					if (next_target.seen_M && (next_target.M >= 20) && (next_target.M <= 29) )
+					{
+						if (next_target.seen_M && next_target.M == 29)
+						{ 
+							// M29 - stop writing
+							sd_writing_file = false;
+							sd_close (&file);
+							serial_writestr("Done saving file\r\n");
+						}
+						else
+						{
+							// else - do not write SD M-codes to file
+							serial_writestr("ok\r\n");
+						}
+					}
+					else
+					{
+						// lines in files must be LF terminated for sd_read_file to work
+						if (pLine->data [pLine->len-1] == 13)
+							pLine->data [pLine->len-1] = 10;
 
-                            /* do not reply the "ok" for some commands which generate own reply */
-                            if (send_reply)
-                            {
-                              serial_writestr("ok\r\n");
-                            }
+						if (sd_write_to_file(pLine->data, pLine->len))
+							serial_writestr("ok\r\n");
+						else
+							serial_writestr("error writing to file\r\n");
+					}
+				}
+				else
+				{
+					// process
+					send_reply = process_gcode_command();
 
-                            // expect next line number
-                            if (next_target.seen_N == 1)
-                                    next_target.N_expected = next_target.N + 1;
-			      }
+					/* do not reply the "ok" for some commands which generate own reply */
+					if (send_reply)
+					{
+						serial_writestr("ok\r\n");
+					}
+
+					// expect next line number
+					if (next_target.seen_N == 1)
+						next_target.N_expected = next_target.N + 1;
+				}
 			}
 			else {
 				serial_writestr("Expected checksum ");
@@ -436,11 +436,11 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 
 		// reset variables
 		next_target.seen_X = next_target.seen_Y = next_target.seen_Z = \
-                next_target.seen_E = next_target.seen_F = next_target.seen_S = \
-                next_target.seen_P = next_target.seen_N = next_target.seen_M = \
-                next_target.seen_checksum = next_target.seen_semi_comment = \
-                next_target.seen_parens_comment = next_target.checksum_read = \
-                next_target.checksum_calculated = 0;
+							 next_target.seen_E = next_target.seen_F = next_target.seen_S = \
+							 next_target.seen_P = next_target.seen_N = next_target.seen_M = \
+							 next_target.seen_checksum = next_target.seen_semi_comment = \
+							 next_target.seen_parens_comment = next_target.checksum_read = \
+							 next_target.checksum_calculated = 0;
 		next_target.chpos = 0;
 		last_field = 0;
 		read_digit.sign = read_digit.mantissa = read_digit.exponent = 0;
@@ -457,12 +457,12 @@ void gcode_parse_char(uint8_t c, tLineBuffer *pLine) {
 }
 
 /****************************************************************************
-*                                                                           *
-* Request a resend of the current line - used from various places.          *
-*                                                                           *
-* Relies on the global variable next_target.N being valid.                  *
-*                                                                           *
-****************************************************************************/
+ *                                                                           *
+ * Request a resend of the current line - used from various places.          *
+ *                                                                           *
+ * Relies on the global variable next_target.N being valid.                  *
+ *                                                                           *
+ ****************************************************************************/
 
 void request_resend(void) {
 	serial_writestr("rs ");

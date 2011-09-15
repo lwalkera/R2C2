@@ -41,13 +41,13 @@ DDA movebuffer[MOVEBUFFER_SIZE];
 
 
 uint8_t queue_full() {
-  uint8_t a;
-  a = (((mb_tail - mb_head - 1) & (MOVEBUFFER_SIZE - 1)) == 0)?255:0;
-        return a;
+	uint8_t a;
+	a = (((mb_tail - mb_head - 1) & (MOVEBUFFER_SIZE - 1)) == 0)?255:0;
+	return a;
 }
 
 uint8_t queue_empty() {
-        return ((mb_tail == mb_head) && (movebuffer[mb_tail].live == 0))?255:0;
+	return ((mb_tail == mb_head) && (movebuffer[mb_tail].live == 0))?255:0;
 }
 
 // -------------------------------------------------------
@@ -56,83 +56,83 @@ uint8_t queue_empty() {
 // -------------------------------------------------------
 void queue_step()
 {
-  // do our next step
-  if (movebuffer[mb_tail].live)
-  {
-    if (movebuffer[mb_tail].waitfor_temp)
-    {
-      if (temp_achieved(EXTRUDER_0))
-      {
-        movebuffer[mb_tail].live = movebuffer[mb_tail].waitfor_temp = 0;
-        serial_writestr("Temp achieved\r\n");
-      }
-    }
-    else
-    {
-      // NOTE: dda_step makes this interrupt interruptible after steps have been sent but before new speed is calculated.
-      dda_step(&(movebuffer[mb_tail]));
-    }
-  }
+	// do our next step
+	if (movebuffer[mb_tail].live)
+	{
+		if (movebuffer[mb_tail].waitfor_temp)
+		{
+			if (temp_achieved(EXTRUDER_0))
+			{
+				movebuffer[mb_tail].live = movebuffer[mb_tail].waitfor_temp = 0;
+				serial_writestr("Temp achieved\r\n");
+			}
+		}
+		else
+		{
+			// NOTE: dda_step makes this interrupt interruptible after steps have been sent but before new speed is calculated.
+			dda_step(&(movebuffer[mb_tail]));
+		}
+	}
 
-  // fall directly into dda_start instead of waiting for another step
-  // the dda dies not directly after its last step, but when the timer fires and there's no steps to do
-  if (movebuffer[mb_tail].live == 0)
-    next_move();
+	// fall directly into dda_start instead of waiting for another step
+	// the dda dies not directly after its last step, but when the timer fires and there's no steps to do
+	if (movebuffer[mb_tail].live == 0)
+		next_move();
 }
 
 void enqueue(TARGET *t)
 {
-  // don't call this function when the queue is full, but just in case, wait for a move to complete and free up the space for the passed target
-  while (queue_full())
-    delay(WAITING_DELAY);
+	// don't call this function when the queue is full, but just in case, wait for a move to complete and free up the space for the passed target
+	while (queue_full())
+		delay(WAITING_DELAY);
 
-  uint8_t h = mb_head + 1;
-  h &= (MOVEBUFFER_SIZE - 1);
+	uint8_t h = mb_head + 1;
+	h &= (MOVEBUFFER_SIZE - 1);
 
-  if (t != NULL)
-  {
-    dda_create(&movebuffer[h], t);
-  }
-  else
-  {
-    // it's a wait for temp
-    movebuffer[h].waitfor_temp = 1;
-    movebuffer[h].nullmove = 0;
-    // set "step" timeout to maximum
-    movebuffer[h].c = 0xFFFFFF00;
-  }
+	if (t != NULL)
+	{
+		dda_create(&movebuffer[h], t);
+	}
+	else
+	{
+		// it's a wait for temp
+		movebuffer[h].waitfor_temp = 1;
+		movebuffer[h].nullmove = 0;
+		// set "step" timeout to maximum
+		movebuffer[h].c = 0xFFFFFF00;
+	}
 
-  mb_head = h;
+	mb_head = h;
 
-  // fire up in case we're not running yet
-  if (isHwTimerEnabled(0) == 0)
-    next_move();
+	// fire up in case we're not running yet
+	if (isHwTimerEnabled(0) == 0)
+		next_move();
 }
 
 void next_move()
 {
-  if (queue_empty() == 0)
-  {
-    // next item
-    uint8_t t = mb_tail + 1;
-    t &= (MOVEBUFFER_SIZE - 1);
-    dda_start(&movebuffer[t]);
-    mb_tail = t;
-    startBlink();
-  }
-  else
-  {
-    disableHwTimer(0);
-    stopBlink();
-  }
+	if (queue_empty() == 0)
+	{
+		// next item
+		uint8_t t = mb_tail + 1;
+		t &= (MOVEBUFFER_SIZE - 1);
+		dda_start(&movebuffer[t]);
+		mb_tail = t;
+		startBlink();
+	}
+	else
+	{
+		disableHwTimer(0);
+		stopBlink();
+	}
 }
 
 void queue_flush()
 {
-  disableHwTimer(0);
-  stopBlink();
+	disableHwTimer(0);
+	stopBlink();
 
-  // flush queue
-  mb_tail = mb_head;
-  movebuffer[mb_head].live = 0;
+	// flush queue
+	mb_tail = mb_head;
+	movebuffer[mb_head].live = 0;
 }
