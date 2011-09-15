@@ -76,7 +76,7 @@ static U8				bConfiguration = 0;
 /** Installed custom request handler */
 static TFnHandleRequest	*pfnHandleCustomReq = NULL;
 /** Pointer to registered descriptors */
-static const U8			*pabDescrip = NULL;
+static U8	* pabDescrip = NULL;
 
 
 /**
@@ -85,7 +85,7 @@ static const U8			*pabDescrip = NULL;
 
 	@param [in]	pabDescriptors	The descriptor byte array
  */
-void USBRegisterDescriptors(const U8 *pabDescriptors)
+void USBRegisterDescriptors(U8 *pabDescriptors)
 {
 	pabDescrip = pabDescriptors;
 }
@@ -113,7 +113,7 @@ BOOL USBGetDescriptor(U16 wTypeIndex, U16 wLangID, int *piLen, U8 **ppbData)
 	bType = GET_DESC_TYPE(wTypeIndex);
 	bIndex = GET_DESC_INDEX(wTypeIndex);
 	
-	pab = (U8 *)pabDescrip;
+	pab = pabDescrip;
 	iCurIndex = 0;
 	
 	while (pab[DESC_bLength] != 0) {
@@ -171,7 +171,7 @@ static BOOL USBSetConfiguration(U8 bConfigIndex, U8 bAltSetting)
 	}
 	else {
 		// configure endpoints for this configuration/altsetting
-		pab = (U8 *)pabDescrip;
+		pab = pabDescrip;
 		bCurConfig = 0xFF;
 		bCurAltSetting = 0xFF;
 

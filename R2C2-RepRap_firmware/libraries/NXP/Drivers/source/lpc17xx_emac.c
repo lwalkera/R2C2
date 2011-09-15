@@ -285,7 +285,7 @@ static int32_t emac_CRCCalc(uint8_t frame_no_fcs[], int32_t frame_len)
 Status EMAC_Init(EMAC_CFG_Type *EMAC_ConfigStruct)
 {
 	/* Initialize the EMAC Ethernet controller. */
-	int32_t regv,tout, tmp;
+	uint32_t regv,tout, tmp;
 
 	/* Set up clock and power for Ethernet module */
 	CLKPWR_ConfigPPWR (CLKPWR_PCONP_PCENET, ENABLE);
@@ -634,7 +634,7 @@ int32_t EMAC_UpdatePHYStatus(void)
  **********************************************************************/
 void EMAC_SetHashFilter(uint8_t dstMAC_addr[], FunctionalState NewState)
 {
-	uint32_t *pReg;
+	volatile uint32_t *pReg;
 	uint32_t tmp;
 	int32_t crc;
 
@@ -643,8 +643,8 @@ void EMAC_SetHashFilter(uint8_t dstMAC_addr[], FunctionalState NewState)
 	// Extract the value from CRC to get index value for hash filter table
 	crc = (crc >> 23) & 0x3F;
 
-	pReg = (crc > 31) ? ((uint32_t *)&LPC_EMAC->HashFilterH) \
-								: ((uint32_t *)&LPC_EMAC->HashFilterL);
+	pReg = (crc > 31) ? (&LPC_EMAC->HashFilterH) \
+								: (&LPC_EMAC->HashFilterL);
 	tmp = (crc > 31) ? (crc - 32) : crc;
 	if (NewState == ENABLE) {
 		(*pReg) |= (1UL << tmp);

@@ -44,7 +44,6 @@
 /** @addtogroup SSP_Public_Functions
  * @{
  */
-void setSSPclock (LPC_SSP_TypeDef *SSPx, uint32_t target_clock);
 
 /*********************************************************************//**
  * @brief 		Setup clock rate for SSP device
@@ -339,10 +338,10 @@ uint16_t SSP_ReceiveData(LPC_SSP_TypeDef* SSPx)
 int32_t SSP_ReadWrite (LPC_SSP_TypeDef *SSPx, SSP_DATA_SETUP_Type *dataCfg, \
 						SSP_TRANSFER_Type xfType)
 {
-	uint8_t *rdata8;
-    uint8_t *wdata8;
-	uint16_t *rdata16;
-    uint16_t *wdata16;
+	uint8_t *rdata8 = 0;
+    uint8_t *wdata8 = 0;
+	uint16_t *rdata16 = 0;
+    uint16_t *wdata16 = 0;
     uint32_t stat;
     uint32_t tmp;
     int32_t dataword;

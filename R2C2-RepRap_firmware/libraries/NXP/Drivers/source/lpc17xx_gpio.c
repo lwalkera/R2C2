@@ -614,13 +614,13 @@ void FIO_ByteSetDir(uint8_t portNum, uint8_t byteNum, uint8_t bitValue, uint8_t 
 	if(pFIO != NULL) {
 		// Output direction
 		if (dir) {
-			if ((byteNum >= 0) && (byteNum <= 3)) {
+			if (byteNum <= 3) {
 				pFIO->FIODIR[byteNum] |= bitValue;
 			}
 		}
 		// Input direction
 		else {
-			if ((byteNum >= 0) && (byteNum <= 3)) {
+			if (byteNum <= 3) {
 				pFIO->FIODIR[byteNum] &= ~bitValue;
 			}
 		}
@@ -652,13 +652,13 @@ void FIO_ByteSetMask(uint8_t portNum, uint8_t byteNum, uint8_t bitValue, uint8_t
 	if(pFIO != NULL) {
 		// Mask
 		if (maskValue) {
-			if ((byteNum >= 0) && (byteNum <= 3)) {
+			if (byteNum <= 3) {
 				pFIO->FIOMASK[byteNum] |= bitValue;
 			}
 		}
 		// Un-mask
 		else {
-			if ((byteNum >= 0) && (byteNum <= 3)) {
+			if (byteNum <= 3) {
 				pFIO->FIOMASK[byteNum] &= ~bitValue;
 			}
 		}
@@ -684,7 +684,7 @@ void FIO_ByteSetValue(uint8_t portNum, uint8_t byteNum, uint8_t bitValue)
 {
 	GPIO_Byte_TypeDef *pFIO = FIO_ByteGetPointer(portNum);
 	if (pFIO != NULL) {
-		if ((byteNum >= 0) && (byteNum <= 3)){
+		if (byteNum <= 3){
 			pFIO->FIOSET[byteNum] = bitValue;
 		}
 	}
@@ -709,7 +709,7 @@ void FIO_ByteClearValue(uint8_t portNum, uint8_t byteNum, uint8_t bitValue)
 {
 	GPIO_Byte_TypeDef *pFIO = FIO_ByteGetPointer(portNum);
 	if (pFIO != NULL) {
-		if ((byteNum >= 0) && (byteNum <= 3)){
+		if (byteNum <= 3){
 			pFIO->FIOCLR[byteNum] = bitValue;
 		}
 	}
@@ -729,7 +729,7 @@ uint8_t FIO_ByteReadValue(uint8_t portNum, uint8_t byteNum)
 {
 	GPIO_Byte_TypeDef *pFIO = FIO_ByteGetPointer(portNum);
 	if (pFIO != NULL) {
-		if ((byteNum >= 0) && (byteNum <= 3)){
+		if (byteNum <= 3){
 			return (pFIO->FIOPIN[byteNum]);
 		}
 	}

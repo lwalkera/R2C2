@@ -209,11 +209,11 @@ void QEI_SetMaxPosition(LPC_QEI_TypeDef *QEIx, uint32_t ulMaxPos)
  **********************************************************************/
 void QEI_SetPositionComp(LPC_QEI_TypeDef *QEIx, uint8_t bPosCompCh, uint32_t ulPosComp)
 {
-	uint32_t *tmp;
+	__IO uint32_t *tmp;
 
 	CHECK_PARAM(PARAM_QEIx(QEIx));
 	CHECK_PARAM(PARAM_QEI_COMPPOS_CH(bPosCompCh));
-	tmp = (uint32_t *) (&(QEIx->CMPOS0) + bPosCompCh * 4);
+	tmp = (&(QEIx->CMPOS0) + bPosCompCh * 4);
 	*tmp = ulPosComp;
 
 }

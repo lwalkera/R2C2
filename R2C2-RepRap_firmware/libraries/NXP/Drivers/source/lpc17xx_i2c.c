@@ -985,7 +985,7 @@ Status I2C_SlaveTransferData(LPC_I2C_TypeDef *I2Cx, I2C_S_SETUP_Type *TransferCf
 {
 	uint8_t *txdat;
 	uint8_t *rxdat;
-	uint32_t CodeStatus;
+	uint32_t CodeStatus = 0;
 	uint32_t timeout;
 	int32_t time_en;
 	int32_t tmp;

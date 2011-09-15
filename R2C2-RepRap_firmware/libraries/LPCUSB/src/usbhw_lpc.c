@@ -394,9 +394,9 @@ int USBHwEPWrite(U8 bEP, U8 *pbBuf, int iLen)
 	@return the number of bytes available in the EP (possibly more than iMaxLen),
 	or <0 in case of error.
  */
-int USBHwEPRead(U8 bEP, U8 *pbBuf, int iMaxLen)
+int USBHwEPRead(U8 bEP, U8 *pbBuf, unsigned int iMaxLen)
 {
-	int i, idx;
+	unsigned int i, idx;
 	U32	dwData, dwLen;
 	
 	idx = EP2IDX(bEP);
