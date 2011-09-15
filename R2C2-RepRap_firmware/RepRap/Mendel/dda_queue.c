@@ -34,6 +34,9 @@
 #include	"sermsg.h"
 #include	"temp.h"
 
+extern void startBlink();
+extern void stopBlink();
+
 /* movebuffer works as a ring buffer */
 uint8_t mb_head = 0;
 uint8_t mb_tail = 0;

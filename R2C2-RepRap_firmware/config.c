@@ -62,8 +62,8 @@ struct configuration config =
 
 uint16_t read_u16 (FIL *file, uint8_t *line)
 {
-  f_gets(line, 80, file); /* read one line */
-  uint8_t *p_pos = strchr(line, '='); /* find the '=' position */
+  f_gets((char*)line, 80, file); /* read one line */
+  char *p_pos = strchr((char*)line, '='); /* find the '=' position */
   return (atoi(p_pos+1));
 }
 

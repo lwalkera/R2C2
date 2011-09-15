@@ -99,7 +99,7 @@ double calc_distance_3( double dx, double dy, double dz )
 
 // this is an ultra-crude pseudo-logarithm routine, such that:
 // 2 ^ msbloc(v) >= v
-const uint8_t   msbloc (uint32_t v) {
+uint8_t   msbloc (uint32_t v) {
 	uint8_t i;
 	uint32_t c;
 	for (i = 31, c = 0x80000000; i; i--) {

@@ -169,7 +169,7 @@ void temp_tick(void)
 
 uint16_t read_temp(uint8_t sensor_number)
 {
-	uint16_t raw, celsius;
+	uint16_t raw = 0, celsius = 0;
 	uint8_t i;
 
 	if (sensor_number == EXTRUDER_0)

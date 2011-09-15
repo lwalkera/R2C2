@@ -3700,7 +3700,7 @@ int f_printf (
 		}
 
 		/* Get an argument */
-		val = (f & 2) ? va_arg(arp, long) : ((d == 'D') ? (long)va_arg(arp, int) : va_arg(arp, unsigned int));
+		val = (f & 2) ? (unsigned long)va_arg(arp, long) : ((d == 'D') ? (unsigned long)va_arg(arp, int) : va_arg(arp, unsigned int));
 		if (d == 'D' && (val & 0x80000000)) {
 			val = 0 - val;
 			f |= 4;

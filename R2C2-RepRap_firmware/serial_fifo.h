@@ -34,7 +34,7 @@
 typedef struct {
 	volatile int head;
 	volatile int tail;
-	volatile U8 *buf;
+	volatile char *buf;
 } fifo_t;
 
 void fifo_init(fifo_t *fifo, unsigned char *buf);

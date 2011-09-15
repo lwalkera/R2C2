@@ -142,8 +142,7 @@ extern TARGET current_position;
 double approx_distance( double dx, double dy );
 double approx_distance_3( double dx, double dy, double dz );
 
-// const because return value is always the same given the same v
-const uint8_t   msbloc (uint32_t v);
+uint8_t   msbloc (uint32_t v);
 
 /* Initialize DDA variables */
 void dda_init(void);

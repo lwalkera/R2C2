@@ -160,7 +160,7 @@ void SpecialMoveE(int32_t e, uint32_t f) {
 
 void gcode_parse_line (tLineBuffer *pLine) 
 {
-	unsigned int j;
+	int j;
 
 	for (j=0; j < pLine->len; j++)
 		gcode_parse_char (pLine->data [j], pLine);

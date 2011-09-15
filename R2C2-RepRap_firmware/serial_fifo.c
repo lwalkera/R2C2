@@ -35,7 +35,7 @@ void fifo_init(fifo_t *fifo, unsigned char *buf)
 {
 	fifo->head = 0;
 	fifo->tail = 0;
-	fifo->buf = buf;
+	fifo->buf = (char*)buf;
 }
 
 // Atomic version

@@ -70,7 +70,7 @@ static U8 abClassReqData[8];
 // forward declaration of interrupt handler
 void USBIntHandler(void);
 
-static const U8 abDescriptors[] = {
+static U8 abDescriptors[] = {
 
 // device descriptor
   0x12,
